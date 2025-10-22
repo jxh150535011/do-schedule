@@ -1,0 +1,50 @@
+{
+  "name": "async-schedule",
+  "version": "1.0.0",
+  "description": "This control queue is used for asynchronous functions",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./esm/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./esm/index.js",
+  "types": "./types/index.d.ts",
+  "files": [
+    "esm",
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "test": "bun test",
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "publish": "npm publish --registry https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jxh150535011/async-schedule"
+  },
+  "keywords": [
+    "schedule",
+    "async",
+    "task",
+    "request",
+    "cache"
+  ],
+  "author": "joshua jin",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/jxh150535011/async-schedule/issues"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.15.1",
+    "@types/node": "^22.18.10",
+    "typescript": "^5.9.3"
+  }
+}
