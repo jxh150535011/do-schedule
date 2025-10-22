@@ -1,14 +1,14 @@
-# async-schedule
+# do-schedule
 用于控制和调度异步函数的工具
 
 ```
-npm install async-schedule
+npm install do-schedule
 ```
 
 - 并发请求下，使用相同的缓存
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule({
   // 缓存最大数
@@ -64,7 +64,7 @@ result1 === 1
 - 自动可中断、销毁 任务
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule();
 
@@ -111,7 +111,7 @@ await task3 === 1
 - 可重复执行的任务
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule();
 

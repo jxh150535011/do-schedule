@@ -1,4 +1,4 @@
-# async-schedule
+# do-schedule
 A tool for controlling and scheduling asynchronous functions
 
 
@@ -6,7 +6,7 @@ A tool for controlling and scheduling asynchronous functions
 - Using the same cache under concurrent requests
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule({
   // Maximum cache count
@@ -62,7 +62,7 @@ result1 === 1
 - Automatically interruptible and destroyable tasks
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule();
 
@@ -109,7 +109,7 @@ await task3 === 1
 - Repeatable tasks
 
 ```js
-import { createSchedule } from 'async-schedule';
+import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule();
 
