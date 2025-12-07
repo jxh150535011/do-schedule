@@ -4,12 +4,15 @@ export default defineConfig({
   lib: [
     {
       format: 'esm',
-      syntax: ['node 18'],
+      syntax: 'es6',
       dts: {
         distPath: './types'
       },
       bundle: false,
       output: {
+        filename: {
+          js: '[name].mjs'
+        },
         distPath: {
           root: './esm'
         }
@@ -17,16 +20,16 @@ export default defineConfig({
     },
     {
       format: 'cjs',
-      syntax: ['node 18'],
+      syntax: 'es5',
       bundle: false,
       output: {
+        filename: {
+          js: '[name].cjs'
+        },
         distPath: {
-          root: './dist'
+          root: './cjs'
         }
       }
     },
-  ],
-  output: {
-    
-  },
+  ]
 });
