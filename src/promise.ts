@@ -1,3 +1,7 @@
+
+
+// import AbortController from 'abort-controller';
+
 const TASK_ERROR_CODE = {
   ABORT: 'ABORT',
 }
@@ -23,6 +27,9 @@ export interface CreatePromiseResult {
   reject: (error?: any) => Promise<any>;
   tryThen: (success?: (value?: any) => void, error?: (error?: any) => void) => Promise<any>;
 }
+
+// @ts-ignore
+const { AbortController, AbortSignal } = typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
 /** Create a controllable promise (delayed wait) */
 export const createPromise = <T>(options?: CreatePromiseOptions) => {

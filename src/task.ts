@@ -39,6 +39,8 @@ export class Task<T> {
   abort() {
     if (this.proxy.controller) {
       this.proxy.controller.abort();
+    } else {
+      console.warn('unsupport AbortController')
     }
   }
   tryThen(success?: (value?: any) => void, error?: (error?: any) => void) {
