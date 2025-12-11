@@ -21,7 +21,7 @@ export interface CreatePromiseOptions {
 }
 
 export interface CreatePromiseResult {
-  controller: AbortController;
+  controller?: AbortController;
   promise: Promise<any>;
   resolve: (value?: any) => Promise<any>;
   reject: (error?: any) => Promise<any>;
@@ -31,18 +31,24 @@ export interface CreatePromiseResult {
 // @ts-ignore
 const { AbortController, AbortSignal } = typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};
 
+const createAbortController = () => {
+  if (AbortController) {
+    return new AbortController();
+  }
+}
+
 /** Create a controllable promise (delayed wait) */
 export const createPromise = <T>(options?: CreatePromiseOptions) => {
-  const controller = options?.controller || new AbortController();
+  const controller = options?.controller || createAbortController();
 
   const addAbortListener = (reject: any) => {
     // Add asynchronous termination method
     const abort = () => {
       return reject(new Error(TASK_ERROR_CODE.ABORT));
     }
-    controller.signal.addEventListener('abort', abort);
+    controller?.signal.addEventListener('abort', abort);
     return () => {
-      controller.signal.removeEventListener('abort', abort);
+      controller?.signal.removeEventListener('abort', abort);
     };
   }
 

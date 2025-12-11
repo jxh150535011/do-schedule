@@ -1,6 +1,6 @@
 {
   "name": "do-schedule",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This control queue is used for asynchronous functions",
   "type": "module",
   "exports": {
@@ -41,7 +41,7 @@
     "url": "https://github.com/jxh150535011/do-schedule/issues"
   },
   "dependencies": {
-    
+
   },
   "devDependencies": {
     "@rslib/core": "^0.15.1",
