@@ -1,13 +1,13 @@
 {
   "name": "do-schedule",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "This control queue is used for asynchronous functions",
   "type": "module",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
       "import": "./esm/index.mjs",
-      "require": "./dicjsst/index.cjs"
+      "require": "./cjs/index.cjs"
     }
   },
   "main": "./cjs/index.cjs",
