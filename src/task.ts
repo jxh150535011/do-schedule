@@ -40,6 +40,7 @@ export class Task<T> {
     if (this.proxy.controller) {
       this.proxy.controller.abort();
     } else {
+      // @ts-ignore
       console.warn('unsupport AbortController')
     }
   }
