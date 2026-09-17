@@ -15,6 +15,18 @@ export interface TaskBatcherOptions<T> {
 }
 /* 
  * 批处理任务
+
+ * ```typescript
+const batcher = new TaskBatcher<number>({
+  batchSize: 3,
+  maxWait: 1000,
+  process(buffer: T[]) {
+    return sleep(0);
+  }
+});
+
+batcher.push();
+ * ```
  */
 export class TaskBatcher<T> {
     /** 消息缓存队列 */

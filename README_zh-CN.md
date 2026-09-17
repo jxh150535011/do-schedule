@@ -133,3 +133,23 @@ const result = await schedule.invoke(handleRequest)
 result === [res,...10]
 
 ```
+
+- 新增批处理任务控制
+
+```js
+import { TaskBatcher } from 'do-schedule';
+const batcher = new TaskBatcher<number>({
+  batchSize: 3,
+  maxWait: 1000,
+  // 处理函数
+  process(buffer: T[]) {
+    return sleep(0);
+  }
+});
+
+batcher.push();
+
+// 也可以手动强制触发处理
+batcher.flush();
+
+```

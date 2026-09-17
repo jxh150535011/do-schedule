@@ -131,3 +131,23 @@ const result = await schedule.invoke(handleRequest)
 result === [res,...10]
 
 ```
+
+
+- Added batch task control
+```js
+import { TaskBatcher } from 'do-schedule';
+const batcher = new TaskBatcher<number>({
+  batchSize: 3,
+  maxWait: 1000,
+  // Processing function
+  process(buffer: T[]) {
+    return sleep(0);
+  }
+});
+
+batcher.push();
+
+// You can also manually force trigger processing
+batcher.flush();
+
+```
