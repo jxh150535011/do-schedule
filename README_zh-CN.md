@@ -14,14 +14,16 @@ import { createSchedule } from 'do-schedule';
 const schedule = createSchedule({
   // 缓存最大数
   max: 1,
-  // 过期时间 毫秒数(注意 ，获取数据时需要自定判断有效期， 程序内部过期时间仅用于超过最大缓存数时的清理动作)
+  // 过期时间 毫秒数， 默认1天
+  // invoke 调用 默认会检查过期时间， 如果过期了 返回的prev 为 空
+  // 可以通过 checkExpires: false 来禁用过期检查， 可能会返回过期的任务（如未清理）
   expires: 100,
 });
 
 // 多次调用请求相同的key
 
 const handleRequest = async ({ pre,wait}) => {
-  // 自行判断数据有效性
+  // 也可以进行自行判断，通常需要设置 checkExpires: false 才会有意义
   if (prev && prev.expires < Date.now()) {
     return 1;
   }
@@ -39,6 +41,9 @@ const result = await Promise.all([
   }),
   schedule.invoke(handleRequest, {
     key: 'key1',
+    // 如果 你想要复用过期的任务， 可以通过 checkExpires: false 来禁用过期检查
+    // 注意： 这可能会导致返回过期的任务 并且 不一定100% 能返回，当超过max限制时，会被优先释放
+    checkExpires: false,
   });
 ])
 
@@ -160,3 +165,9 @@ batcher.push();
 batcher.flush();
 
 ```
+
+
+## 1.1.0
+- 调整默认过期控制
+ - 本次 改动了 默认 expires 过期逻辑， invoke 调用 默认会检查过期时间， 如果过期了 返回的prev 为 空
+ - 可以通过 checkExpires: false 来禁用过期检查， 可能会返回过期的任务（如未清理）

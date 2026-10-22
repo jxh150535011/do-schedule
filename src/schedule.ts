@@ -56,6 +56,9 @@ export interface CreatesScheduleInvokeTypeOptions<T = any> {
   destoryable?: boolean;
   /** Custom expiration time setting */
   expires?: ((expires?: number) => number);
+
+  /** Whether to check expiration time, default to true */
+  checkExpires?: boolean;
 }
 
 export type CreatesScheduleInvokeCallbackFn<T = any> = (options: CreatesScheduleInvokeCallbackOptions<T>) => Promise<T | undefined>;
@@ -135,8 +138,8 @@ export class Schedule<T> {
 
   /** 触发执行一个任务，这个任务会根据 key 进行缓存， 并根据缓存策略 进行判断是否需要重新请求 */
   invoke(fn: CreatesScheduleInvokeCallbackFn<T>, options?: CreatesScheduleInvokeTypeOptions<T>) {
-    const { abortable, destoryable, expires: getExpiresOptions, key } = options || {};
-    const preTask = this.store.get(key);
+    const { abortable, destoryable, expires: getExpiresOptions, checkExpires = true, key } = options || {};
+    const preTask = checkExpires ? this.store.tryGet(key) : this.store.get(key);
     // Next task's expiration time
     const nextExpires = (getExpiresOptions || this.defaultExpires)(preTask?.expires);
     if (abortable) {
@@ -185,18 +188,22 @@ export interface CreatesScheduleOptionsType extends ScheduleOptionsType {
  * Create a task queue that can cache multiple different contents, used for idempotency control when the same key initiates synchronization
  * Each time it will only get the same cache as its own key and return the result to be updated this time
  *
+
 const schedule = createSchedule({
   // Maximum number of cached items
   max: 1,
-  // Expiration time in milliseconds (note: you need to determine the validity period yourself when fetching data;
-  // the internal expiration time is only used for cleanup actions when the maximum cache count is exceeded)
+  // Expiration time in milliseconds, defaults to 1 day
+  // When invoke is called, the expiration time is checked by default. If it has expired,
+  // prev in the callback will be empty
+  // You can disable the expiration check with checkExpires: false,
+  // in which case an expired task (e.g. one that has not been cleaned up) may be returned
   expires: 100,
 });
 
-// Multiple calls requesting the same key
+// Multiple calls request the same key
 
-const handleRequest = async ({ pre, wait }) => {
-  // Determine data validity yourself
+const handleRequest = async ({ prev, wait }) => {
+  // You can also judge manually. It usually only makes sense when checkExpires: false is set.
   if (prev && prev.expires < Date.now()) {
     return 1;
   }
@@ -204,9 +211,14 @@ const handleRequest = async ({ pre, wait }) => {
   if (prevResult) {
     return prevResult + 1;
   }
-  // Do something, e.g. make a network request to get the result
+  // do something, for example make a network request to get the result
   return 1;
 }
+await schedule.invoke(handleRequest, {
+  key: 'key1',
+  // If you want to reuse the expired task, you can disable checkExpires: false
+  // checkExpires: false,
+})
  */
 export const createSchedule = <T>(
   createsScheduleOptions?: CreatesScheduleOptionsType,

@@ -290,9 +290,9 @@ test('createSchedule 6', async () => {
 
   const fn = async (options: CreatesScheduleInvokeCallbackOptions<number>) => {
     const { wait, repeat, repeatCount, prev, current, result } = options;
-    if (prev && prev.expires < Date.now()) {
-      return 0;
-    }
+    // if (prev && prev.expires < Date.now()) {
+    //   return 0;
+    // }
     const prevResult = await wait();
     if (prevResult !== undefined) {
       return prevResult + 1;
@@ -309,6 +309,7 @@ test('createSchedule 6', async () => {
   await timeout(200);
   const value3 = await schedule.invoke(fn, {
     key: 'key1',
+    checkExpires: true,
   })
 
   expect(value1).toEqual(0);
