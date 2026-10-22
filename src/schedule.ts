@@ -185,12 +185,28 @@ export interface CreatesScheduleOptionsType extends ScheduleOptionsType {
  * Create a task queue that can cache multiple different contents, used for idempotency control when the same key initiates synchronization
  * Each time it will only get the same cache as its own key and return the result to be updated this time
  *
- * const factory = createSchedule();
- * cosnt result = factory.invoke(key, (cache) => {
- *    return result;
- * })
- *
- * result.destroy(key?);
+const schedule = createSchedule({
+  // Maximum number of cached items
+  max: 1,
+  // Expiration time in milliseconds (note: you need to determine the validity period yourself when fetching data;
+  // the internal expiration time is only used for cleanup actions when the maximum cache count is exceeded)
+  expires: 100,
+});
+
+// Multiple calls requesting the same key
+
+const handleRequest = async ({ pre, wait }) => {
+  // Determine data validity yourself
+  if (prev && prev.expires < Date.now()) {
+    return 1;
+  }
+  const prevResult = await wait();
+  if (prevResult) {
+    return prevResult + 1;
+  }
+  // Do something, e.g. make a network request to get the result
+  return 1;
+}
  */
 export const createSchedule = <T>(
   createsScheduleOptions?: CreatesScheduleOptionsType,

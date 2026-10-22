@@ -3,24 +3,32 @@ A tool for controlling and scheduling asynchronous functions
 
 
 
-- Using the same cache under concurrent requests
+- Concurrent requests using the same cache
+Expiration time control (note that you need to determine the expiration time yourself)
 
 ```js
 import { createSchedule } from 'do-schedule';
 
 const schedule = createSchedule({
-  // Maximum cache count
+  // Maximum number of cached items
   max: 1,
+  // Expiration time in milliseconds (note: you need to determine the validity period yourself when fetching data;
+  // the internal expiration time is only used for cleanup actions when the maximum cache count is exceeded)
+  expires: 100,
 });
 
 // Multiple calls requesting the same key
 
-const handleRequest = async ({ wait}) => {
+const handleRequest = async ({ pre, wait }) => {
+  // Determine data validity yourself
+  if (prev && prev.expires < Date.now()) {
+    return 1;
+  }
   const prevResult = await wait();
   if (prevResult) {
     return prevResult + 1;
   }
-  // do something, for example make a network request to get the result
+  // Do something, e.g. make a network request to get the result
   return 1;
 }
 
@@ -33,11 +41,11 @@ const result = await Promise.all([
   });
 ])
 
-// Result: The second call reuses the result of the first call
+// Result: the second call reuses the first call's result
 result === [1, 2]
 
 
-// A new request will not reuse the previous cache (different key, and max cache is 1, so it will be released)
+// A new request will not reuse the previous cache because the key is different (since max is 1, the previous cache will be released)
 const result2 = await schedule.invoke(handleRequest, {
   key: 'key2',
 });
@@ -46,15 +54,14 @@ result2 === 1
 
 
 /**
- * Since key1 above was released, key1 here will not reuse the previous cache
- * createSchedule expires provides expiration function control, which can be used to manage when task requests (same key ultimately maintains the same expiration time) will expire
+ * Because key1 above was released, key1 here will not reuse the previous cache
+ * createSchedule's expires provides an expiration function for control, which can be used to manage task requests (the same key ultimately maintains the same expiration time) and when they expire
  */
 const result1 = await schedule.invoke(handleRequest, {
   key: 'key1',
 });
 
 result1 === 1
-
 
 ```
 

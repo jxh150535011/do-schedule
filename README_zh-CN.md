@@ -6,6 +6,7 @@ npm install do-schedule
 ```
 
 - 并发请求下，使用相同的缓存
+- 过期时间控制（特别注意 需要自行判断过期时间）
 
 ```js
 import { createSchedule } from 'do-schedule';
@@ -13,11 +14,17 @@ import { createSchedule } from 'do-schedule';
 const schedule = createSchedule({
   // 缓存最大数
   max: 1,
+  // 过期时间 毫秒数(注意 ，获取数据时需要自定判断有效期， 程序内部过期时间仅用于超过最大缓存数时的清理动作)
+  expires: 100,
 });
 
 // 多次调用请求相同的key
 
-const handleRequest = async ({ wait}) => {
+const handleRequest = async ({ pre,wait}) => {
+  // 自行判断数据有效性
+  if (prev && prev.expires < Date.now()) {
+    return 1;
+  }
   const prevResult = await wait();
   if (prevResult) {
     return prevResult + 1;

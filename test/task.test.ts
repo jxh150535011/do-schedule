@@ -279,3 +279,39 @@ test('createSchedule 6', async () => {
   expect(value1).toEqual(104);
   expect(value2).toEqual(value1 + 1);
 });
+
+
+// @ts-ignore
+test('createSchedule 6', async () => {
+  const schedule = createSchedule<number>({
+    key: 'test7',
+    expires: 100
+  });
+
+  const fn = async (options: CreatesScheduleInvokeCallbackOptions<number>) => {
+    const { wait, repeat, repeatCount, prev, current, result } = options;
+    if (prev && prev.expires < Date.now()) {
+      return 0;
+    }
+    const prevResult = await wait();
+    if (prevResult !== undefined) {
+      return prevResult + 1;
+    }
+    return 0;
+  }
+  const value1 = await schedule.invoke(fn, {
+    key: 'key1',
+  });
+  const value2 = await schedule.invoke(fn, {
+    key: 'key1',
+  });
+  
+  await timeout(200);
+  const value3 = await schedule.invoke(fn, {
+    key: 'key1',
+  })
+
+  expect(value1).toEqual(0);
+  expect(value2).toEqual(1);
+  expect(value3).toEqual(0);
+});
